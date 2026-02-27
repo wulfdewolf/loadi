@@ -1,0 +1,46 @@
+{
+    "vr_gain_1061": {
+        "0": {
+            "0": [
+                "unit",
+                "subject_position"
+            ],
+            "1": [
+                "unit",
+                "subject_position"
+            ],
+            "2": [
+                "unit",
+                "subject_position"
+            ]
+        },
+        "1": {
+            "0": [
+                "unit",
+                "subject_position"
+            ],
+            "1": [
+                "unit",
+                "subject_position"
+            ],
+            "2": [
+                "unit",
+                "subject_position"
+            ]
+        }
+    },
+    "2dVR": {
+        "0": {
+            "0": [
+                "unit",
+                "subject_position"
+            ]
+        },
+        "1": {
+            "0": [
+                "unit",
+                "subject_position"
+            ]
+        }
+    }
+}

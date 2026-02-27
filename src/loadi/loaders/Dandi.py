@@ -38,10 +38,13 @@ class DandiExperiment(BaseExperiment):
         
         self.dandi_id = dandi_id
 
-        with resources.files('loadi.resources.dandi').joinpath(f'{dandi_id}.json').open('r') as f:
-            self.data_paths = json.load(f)
+        file_path = resources.files('loadi.resources.dandi').joinpath(f'{dandi_id}.json')
 
-        if False:
+        # Check if it exists
+        if file_path.exists():
+            with file_path.open('r') as f:
+                self.data_paths = json.load(f)
+        else:
             nwb_files = _load_nwb_files_in_dandiset(dandi_id, 'draft')
             data_dict = {}
             for nwb_file in nwb_files:

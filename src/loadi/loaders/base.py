@@ -44,7 +44,7 @@ class BaseExperiment:
         return self._walk(self.data_paths, [])
 
     def _walk(self, current_node, path):
-        if isinstance(current_node, list):
+        if isinstance(current_node, list) or isinstance(current_node, str):
             yield self.get_session(*path)
         elif isinstance(current_node, dict):
             for key, value in current_node.items():
