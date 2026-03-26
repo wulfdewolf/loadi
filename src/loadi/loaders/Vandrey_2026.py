@@ -76,7 +76,7 @@ class Vandrey2026Session(BaseSession):
         if ephys_path is None:
             return None
         
-        recording = read_openephys(self.containing_folder / ephys_path)
+        recording = read_openephys(self.containing_folder / ephys_path, stream_id='CH')
 
         tetrodes = []
 
