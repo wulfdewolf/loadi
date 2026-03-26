@@ -10,8 +10,6 @@ import json
 import requests
 def _load_nwb_files_in_dandiset(dandiset_id, version):
 
-    from dandi.dandiapi import DandiAPIClient
-
     url = f"https://api.dandiarchive.org/api/dandisets/{dandiset_id}/versions/{version}/assets/?page_size=100&glob=*.nwb"
     response = requests.get(url)
     if response.status_code != 200:
@@ -72,8 +70,9 @@ class DandiExperiment(BaseExperiment):
                  return DandiSession(self.dandi_id, str(target_path))
 
 class DandiSession(BaseSession):
-        
+
     def __init__(self, dandiset_id, target_path):
+        from dandi.dandiapi import DandiAPIClient
         client = DandiAPIClient()
         dandiset = client.get_dandiset(dandiset_id, "draft")
         asset = dandiset.get_asset_by_path(target_path)
@@ -86,3 +85,9 @@ class DandiSession(BaseSession):
     def load_units(self) -> nap.TsGroup:
         return self.nwb['units']
 
+    def load(self, key: str):
+        available_keys = self.nwb.keys()
+        if key in available_keys:
+            return self.nwb[key]
+        else:
+            raise ValueError(f"{key} not in available keys: {available_keys}")
