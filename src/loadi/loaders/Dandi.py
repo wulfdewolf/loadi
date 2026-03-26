@@ -1,6 +1,5 @@
 import pynapple as nap
 from .base import BaseSession, BaseExperiment
-from dandi.dandiapi import DandiAPIClient
 import h5py
 from pynwb import NWBHDF5IO
 import fsspec
@@ -10,6 +9,8 @@ import json
 
 import requests
 def _load_nwb_files_in_dandiset(dandiset_id, version):
+
+    from dandi.dandiapi import DandiAPIClient
 
     url = f"https://api.dandiarchive.org/api/dandisets/{dandiset_id}/versions/{version}/assets/?page_size=100&glob=*.nwb"
     response = requests.get(url)
