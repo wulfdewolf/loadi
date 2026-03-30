@@ -27,21 +27,21 @@ class NagelhusMoser2023Experiment(BaseExperiment):
         self.session_class = NagelhusMoser2023Session
 
 
-    def get_session(self, rat_id, day_id, session_type):
+    def get_session(self, subject_id, day_id, session_type):
 
-        if isinstance(rat_id, int):
-            rat_id = str(rat_id)
+        if isinstance(subject_id, int):
+            subject_id = str(subject_id)
 
         if isinstance(day_id, int):
             day_id = str(day_id)
 
-        mouse_dict = self.data_paths.get(rat_id)
+        mouse_dict = self.data_paths.get(subject_id)
         if mouse_dict is None:
-             raise ValueError(f"No rat_id {rat_id}. Possible mice are {self.data_paths.keys()}.")
+             raise ValueError(f"No subject_id {subject_id}. Possible subject_ids are {self.data_paths.keys()}.")
         else:
-            data_path = self.containing_folder / 'datasets' / self.file_map[f'{rat_id}_{day_id}']
+            data_path = self.containing_folder / 'datasets' / self.file_map[f'{subject_id}_{day_id}']
             if not data_path.is_file():
-                raise FileNotFoundError(f'Cannot find data path {data_path}, which contains rat {rat_id}')
+                raise FileNotFoundError(f'Cannot find data path {data_path}, which contains rat {subject_id}')
             day_dict = mouse_dict.get(day_id)
             if day_dict is None:
                 raise ValueError(f"No session_id {day_id}. Possible session_ids are {mouse_dict.keys()}.")
@@ -50,7 +50,7 @@ class NagelhusMoser2023Experiment(BaseExperiment):
                 if session_dict is None:
                     raise ValueError(f"No session_type called {session_type}. Possible mice are {day_dict.keys()}.")
                 else:
-                    return NagelhusMoser2023Session(rat_id, day_id, session_type, known_data_types=session_dict, data_path=data_path)
+                    return NagelhusMoser2023Session(subject_id, day_id, session_type, known_data_types=session_dict, data_path=data_path)
 
 
 class NagelhusMoser2023Session(BaseSession):
@@ -85,19 +85,16 @@ class NagelhusMoser2023Session(BaseSession):
 
         return spikes
     
-    def load_subject_position(self) -> PositionDict:
+    def load_position(self) -> nap.TsdFrame:
 
         positions = self.session_data['tracking']
         x = np.transpose(positions['x'][0][0])[0]
         y = np.transpose(positions['y'][0][0])[0]
         timestamps = np.transpose(positions['timestamp'][0][0])[0]
 
-        Px = nap.Tsd(timestamps, x)
-        Py = nap.Tsd(timestamps, y)
+        position = nap.TsdFrame(timestamps, d=np.transpose(np.vstack([x,y])), columns=['x', 'y'])
 
-        beh_dict = {'Px': Px, 'Py': Py}
-
-        return beh_dict
+        return position
     
     def load_object_position(self):
 

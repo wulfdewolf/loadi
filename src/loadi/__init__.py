@@ -3,3 +3,4 @@ from loadi.loaders.Kanter_Moser_2025 import KanterMoser2025Experiment#
 from loadi.loaders.Dandi import DandiExperiment
 from loadi.loaders.Vandrey_2026 import Vandrey2026Experiment
 from loadi.loaders.Clark_2026 import Clark2026Experiment
+from loadi.loaders.Wills_Muessing_2023 import WillsMuessig2023Experiment

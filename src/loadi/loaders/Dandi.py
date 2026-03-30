@@ -10,7 +10,7 @@ import json
 import requests
 def _load_nwb_files_in_dandiset(dandiset_id, version):
 
-    url = f"https://api.dandiarchive.org/api/dandisets/{dandiset_id}/versions/{version}/assets/?page_size=100&glob=*.nwb"
+    url = f"https://api.dandiarchive.org/api/dandisets/{dandiset_id}/versions/{version}/assets/?page_size=1000&glob=*.nwb"
     response = requests.get(url)
     if response.status_code != 200:
         raise Exception(
@@ -32,7 +32,8 @@ class DandiExperiment(BaseExperiment):
 
     def __init__(
         self, 
-        dandi_id = None
+        dandi_id = None,
+        version = 'draft',
     ):
         
         self.dandi_id = dandi_id
@@ -44,7 +45,7 @@ class DandiExperiment(BaseExperiment):
             with file_path.open('r') as f:
                 self.data_paths = json.load(f)
         else:
-            nwb_files = _load_nwb_files_in_dandiset(dandi_id, 'draft')
+            nwb_files = _load_nwb_files_in_dandiset(dandi_id, version)
             data_dict = {}
             for nwb_file in nwb_files:
                 subject, session = nwb_file['path'].split('/')
@@ -72,6 +73,7 @@ class DandiExperiment(BaseExperiment):
 class DandiSession(BaseSession):
 
     def __init__(self, dandiset_id, target_path):
+        
         from dandi.dandiapi import DandiAPIClient
         client = DandiAPIClient()
         dandiset = client.get_dandiset(dandiset_id, "draft")
