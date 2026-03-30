@@ -8,6 +8,21 @@ from importlib import resources
 from pymatreader import read_mat
 
 class WillsMuessig2023Experiment(BaseExperiment):
+    """"
+    Data from 
+        Environment geometry alters subiculum boundary vector cell receptive fields in adulthood and early development
+        Laurenz Muessig, Fabio Ribeiro Rodrigues, Tale L. Bjerknes, Benjamin W. Towse, Caswell Barry, Neil Burgess, Edvard I. Moser, May-Britt Moser, Francesca Cacucci & Thomas J. Wills 
+        Paper: https://www.nature.com/articles/s41467-024-45098-1 (https://doi.org/10.1038/s41467-024-45098-1)
+        Data: https://rdr.ucl.ac.uk/articles/dataset/Subiculum_neuron_data_from_adult_and_developing_rats/24864732 (https://doi.org/10.5522/04/24864732)
+
+        
+    Data expected to be in the form:
+
+    containing_folder/
+        Position_data.mat
+        Results.mat
+        ...
+    """
 
     def __init__(
         self, 

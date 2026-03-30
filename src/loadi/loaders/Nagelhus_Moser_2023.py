@@ -7,7 +7,22 @@ from scipy.io import loadmat
 from importlib import resources
 
 class NagelhusMoser2023Experiment(BaseExperiment):
+    """"
+    Data from 
+        Extracellular unit recordings from CA1/CA3 pyramidal cells in rats exploring an open arena with object landmarks
+        Nagelhus, A., Andersson, S., Gonzalo Cogno, S., Moser, E., & Moser, M.-B.
+        Data: https://search.kg.ebrains.eu/instances/0162668e-bef0-4754-8562-40440db5bc0c
+        Original paper: https://www.sciencedirect.com/science/article/pii/S0896627323002702
+       
+    Data expected to be in the form:
 
+    containing_folder/
+        datasets/
+            ...
+        data-descriptor_40440db5bc0c.pdf
+        Licence-CC-BY.pdf
+        
+    """
     def __init__(
         self, 
         containing_folder=None, 
