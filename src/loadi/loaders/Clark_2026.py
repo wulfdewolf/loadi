@@ -27,7 +27,22 @@ class Clark2026Session(BaseSession):
         return header_text + streams_text
 
     def load_units(self, output="pynapple") -> nap.TsGroup:
-        return 
+        
+        spikes_path = self.containing_folder / f'Wolf/FULL/M{self.mouse}/D{self.day}/{self.session.upper()}/sub-{self.mouse}_day-{self.day}_ses-{self.session.upper()}_srt-kilosort4_clusters.npz'
+        clusters = nap.load_file(spikes_path) 
+
+        existing_metadata = clusters.metadata
+
+        grid_score_path = self.containing_folder / f'Wolf/FULL/M{self.mouse}/D{self.day}/{self.session.upper()}/tuning_scores/kilosort4/travel_shifted_grid_score.parquet'
+        all_shifted_grid_scores = pd.read_parquet(grid_score_path)
+        zero_shift_grid_cells = all_shifted_grid_scores.query("shift == 0 & epoch == 'all'")[['cluster_id', 'grid_score', 'sig', 'pval']]
+
+        metadata_with_grid_score = existing_metadata.merge(zero_shift_grid_cells, on='cluster_id', how='left')
+        metadata_with_grid_score = metadata_with_grid_score.drop(labels = 'rate', axis=1)
+
+        clusters.set_info(metadata_with_grid_score)
+
+        return clusters
 
     def load_behaviour(self) -> nap.TsdFrame:
         return 
