@@ -8955,7 +8955,9 @@
             },
             "of1": {
                 "ephys": "Bri/optetrode_recordings/control/1887/1887_2025-06-19b_17-44-26_of1",
+                "clusters": "Bri/optetrode_recordings/control/1887/1887_2025-06-19b_17-44-26_of1/MountainSort/DataFrames/spatial_firing.pkl",
                 "video": "Bri/optetrode_recordings/control/1887/1887_2025-06-19b_17-44-26_of1/1887_2025-06-19_of1.avi",
+                "position": "Bri/optetrode_recordings/control/1887/1887_2025-06-19b_17-44-26_of1/MountainSort/DataFrames/position.pkl",
                 "object_position": "/home/nolanlab/fromgit/bri_data_wrangle/object_positions.csv",
                 "protocol": "6"
             }
