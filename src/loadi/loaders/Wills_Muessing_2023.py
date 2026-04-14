@@ -84,24 +84,20 @@ class WillsMuessig2023Session(BaseSession):
 
     def load_units(self) -> nap.TsGroup:
         
-        trial_id = int(self.session)
         mouseday_id = f'{self.mouse}_{self.date}'
+        session_index = int(self.session.split('_')[-1])
 
         spike_mousedays = self.spike_data['#subsystem#']['MCOS'][2]
         all_spike_trains = spike_mousedays[23]
 
         mouseday_id_per_cell = [cell_id.split(' ')[0] for cell_id in spike_mousedays[0]]
-        cell_trials = spike_mousedays[5]
 
         cell_ids_per_mouseday = np.array(mouseday_id_per_cell) == mouseday_id
-        result = np.repeat(cell_ids_per_mouseday, 5)
 
         unit_spike_trains = []
-        for res_index, (res, cell_trial) in enumerate(zip(result, cell_trials.flatten(), strict=True)):
+        for res_index, res in enumerate(cell_ids_per_mouseday):
             if res:
-                if not np.isnan(cell_trial):
-                    if int(cell_trial) == trial_id:
-                        unit_spike_trains.append(all_spike_trains[res_index])
+                unit_spike_trains.append(all_spike_trains[2779*session_index + res_index])
 
         spikes = nap.TsGroup(unit_spike_trains)
         return spikes
@@ -109,38 +105,32 @@ class WillsMuessig2023Session(BaseSession):
     def load_position(self) -> nap.TsdFrame:
 
         position_sampling_rate = 50
-
-        trial_id = int(self.session)
         mouseday_id = f'{self.mouse}_{self.date}'
+        session_index = int(self.session.split('_')[-1])
 
         actual_data = self.position_data['#subsystem#']['MCOS'][2]
 
         mouseday_index = actual_data[0].index(mouseday_id)
-        trial_ids = actual_data[1][mouseday_index]
-        trial_index = list(trial_ids).index(trial_id)
-        position = actual_data[2][mouseday_index*5 + trial_index]
+        position = actual_data[2][session_index*367+mouseday_index]
 
         times = np.arange(0,len(position)/position_sampling_rate, 1/position_sampling_rate)
         position = nap.TsdFrame(t=times,d=position, columns=['x', 'y'])
 
         return position
-    
+
     def load_direction(self) -> nap.TsdFrame:
 
         position_sampling_rate = 50
-
-        trial_id = int(self.session)
         mouseday_id = f'{self.mouse}_{self.date}'
+        session_index = int(self.session.split('_')[-1])
 
         actual_data = self.position_data['#subsystem#']['MCOS'][2]
 
         mouseday_index = actual_data[0].index(mouseday_id)
-        trial_ids = actual_data[1][mouseday_index]
-        trial_index = list(trial_ids).index(trial_id)
-        position = actual_data[3][mouseday_index*5 + trial_index]
+        direction = actual_data[3][session_index*367+mouseday_index]
 
-        times = np.arange(0,len(position)/position_sampling_rate, 1/position_sampling_rate)
-        direction = nap.TsdFrame(t=times,d=position, columns=['direction'])
+        times = np.arange(0,len(direction)/position_sampling_rate, 1/position_sampling_rate)
+        direction = nap.TsdFrame(t=times,d=direction, columns=['x', 'y'])
 
         return direction
 
