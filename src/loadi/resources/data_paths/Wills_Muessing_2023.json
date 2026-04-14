@@ -1492,10 +1492,6 @@
             "hp70_1": [
                 "units",
                 "position"
-            ],
-            "barrier HL_3": [
-                "units",
-                "position"
             ]
         },
         "Adult_06": {
@@ -1538,10 +1534,6 @@
                 "position"
             ],
             "hp70_1": [
-                "units",
-                "position"
-            ],
-            "barrier HR_3": [
                 "units",
                 "position"
             ]
@@ -1706,10 +1698,6 @@
                 "position"
             ],
             "hp70_1": [
-                "units",
-                "position"
-            ],
-            "barrier VT_2": [
                 "units",
                 "position"
             ]
