@@ -1,4 +1,4 @@
-One all there will be a universally agreed  Neuroscience data standard. Until then, there's `loadi`.
+One day there will be a universally agreed Neuroscience data standard. Until then, there's `loadi`.
 
 Install
 -------
