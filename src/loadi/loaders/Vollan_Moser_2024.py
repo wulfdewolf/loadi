@@ -1,11 +1,13 @@
-import pynapple as nap
-from .base import BaseSession, BaseExperiment
-import numpy as np
-from pathlib import Path
 import json
-from scipy.io import loadmat
-from importlib import resources
 import warnings
+from importlib import resources
+from pathlib import Path
+
+import numpy as np
+import pynapple as nap
+from scipy.io import loadmat
+
+from .base import BaseExperiment, BaseSession
 
 
 class VollanMoser2024Experiment(BaseExperiment):
@@ -55,7 +57,6 @@ class VollanMoser2024Experiment(BaseExperiment):
         self.session_class = VollanMoser2024Session
 
     def get_session(self, subject_id, session_name):
-
         # if subject_id == '24666' and session_name == 'of_1':
         #     warnings.warn('Something wrong with this one...')
         #     return None
@@ -95,7 +96,6 @@ class VollanMoser2024Experiment(BaseExperiment):
 
 class VollanMoser2024Session(BaseSession):
     def __init__(self, subject_id, session_name, known_data_types=None, data_path=None):
-
         self.subject_id = subject_id
         self.session_name = session_name
         self.session_type = session_name.split("_")[0]
@@ -109,7 +109,6 @@ class VollanMoser2024Session(BaseSession):
         self.session_data = data[correct_key][0][0]
 
     def load_units(self) -> nap.TsGroup:
-
         # correct for sleep
         if self.session_type == "sleep":
             spike_data = self.session_data["units"]["spikeTimes"]
@@ -138,12 +137,11 @@ class VollanMoser2024Session(BaseSession):
         return spikes
 
     def load_position(self) -> nap.TsdFrame:
-
         if self.session_type == "sleep":
             warnings.warn("Sleep sessions have no position data.")
             return None
 
-        data_to_load = ["x", "y", "z", "hd"]
+        data_to_load = ["x", "y", "z", "hd", "theta"]
 
         data = [
             np.transpose(self.session_data[data_type])[0] for data_type in data_to_load
