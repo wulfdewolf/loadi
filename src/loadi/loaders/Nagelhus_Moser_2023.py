@@ -1,5 +1,5 @@
 import pynapple as nap
-from .base import BaseSession, BaseExperiment, PositionDict
+from .base import BaseSession, BaseExperiment
 import numpy as np
 from pathlib import Path
 import json
