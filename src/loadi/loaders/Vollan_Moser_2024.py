@@ -13,7 +13,7 @@ class VollanMoser2024Experiment(BaseExperiment):
         Left-right-alternating theta sweeps in the entorhinal-hippocampal spatial map (v1)
         Data: https://search.kg.ebrains.eu/instances/4080b78d-edc5-4ae4-8144-7f6de79930ea
        
-    Data expected to be in the form:
+    Data in `containing_folder` expected to be in the form:
 
     containing_folder/
         sharing_v4/
@@ -49,9 +49,9 @@ class VollanMoser2024Experiment(BaseExperiment):
 
     def get_session(self, subject_id, session_name):
 
-        if subject_id == '24666' and session_name == 'of_1':
-            warnings.warn('Something wrong with this one...')
-            return None
+        # if subject_id == '24666' and session_name == 'of_1':
+        #     warnings.warn('Something wrong with this one...')
+        #     return None
 
         if isinstance(subject_id, int):
             subject_id = str(subject_id)
@@ -96,15 +96,28 @@ class VollanMoser2024Session(BaseSession):
         
         # correct for sleep
         if self.session_type == 'sleep':
-            session_units = self.session_data['units']
+            spike_data = self.session_data['units']['spikeTimes']
+            metadata = None
             
         else:
             # correct for others
-            session_units = self.session_data['units'][0][0][0]
+            all_units = self.session_data['units'][0]
+            mec_units = all_units['mec'][0]
+            hc_units = all_units['hc'][0]
 
-        spike_data = session_units['spikeTimes']
+            num_mec_units = len(mec_units)
+            num_hc_units = len(hc_units)
+
+            brain_region_per_unit = ['mec'] * num_mec_units + ['hc'] * num_hc_units
+            spike_data = np.concat([hc_units['spikeTimes'], mec_units['spikeTimes']])
+
+            metadata = {'brain_region': brain_region_per_unit}
+
         spikes_np = [np.transpose(spike_train[0])[0] for spike_train in spike_data]
-        spikes = nap.TsGroup(spikes_np)
+        spikes = nap.TsGroup(
+            spikes_np,
+            metadata = metadata,
+        )
 
         return spikes
     
