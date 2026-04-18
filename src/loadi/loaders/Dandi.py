@@ -8,6 +8,8 @@ from importlib import resources
 import json
 
 import requests
+
+
 def _load_nwb_files_in_dandiset(dandiset_id, version):
 
     url = f"https://api.dandiarchive.org/api/dandisets/{dandiset_id}/versions/{version}/assets/?page_size=1000&glob=*.nwb"
@@ -28,32 +30,31 @@ def _load_nwb_files_in_dandiset(dandiset_id, version):
         )
     return nwb_files
 
+
 class DandiExperiment(BaseExperiment):
+    def __init__(self, dandi_id=None, version="draft", cache_path="dandi_cache"):
 
-    def __init__(
-        self, 
-        dandi_id = None,
-        version = 'draft',
-    ):
-        
         self.dandi_id = dandi_id
+        self.cache_path = cache_path
 
-        file_path = resources.files('loadi.resources.dandi').joinpath(f'{dandi_id}.json')
+        file_path = resources.files("loadi.resources.dandi").joinpath(
+            f"{dandi_id}.json"
+        )
 
         # Check if it exists
         if file_path.exists():
-            with file_path.open('r') as f:
+            with file_path.open("r") as f:
                 self.data_paths = json.load(f)
         else:
             nwb_files = _load_nwb_files_in_dandiset(dandi_id, version)
             data_dict = {}
             for nwb_file in nwb_files:
-                subject, session = nwb_file['path'].split('/')
-                
+                subject, session = nwb_file["path"].split("/")
+
                 if data_dict.get(subject) is None:
                     data_dict[subject] = {}
 
-                data_dict[subject][session] = ['units']
+                data_dict[subject][session] = ["units"]
 
             self.data_paths = data_dict
 
@@ -61,31 +62,38 @@ class DandiExperiment(BaseExperiment):
 
         mouse_dict = self.data_paths.get(subject_id)
         if mouse_dict is None:
-             raise ValueError(f"No subject called {subject_id}. Possible subjects are {self.data_paths.keys()}.")
+            raise ValueError(
+                f"No subject called {subject_id}. Possible subjects are {self.data_paths.keys()}."
+            )
         else:
-             file_list = mouse_dict.get(session_id)
-             if file_list is None:
-                 raise ValueError(f"No session_id called {session_id}. Possible session_ids are {mouse_dict.keys()}.")
-             else:
-                 target_path = Path(subject_id) / session_id
-                 return DandiSession(self.dandi_id, str(target_path))
+            file_list = mouse_dict.get(session_id)
+            if file_list is None:
+                raise ValueError(
+                    f"No session_id called {session_id}. Possible session_ids are {mouse_dict.keys()}."
+                )
+            else:
+                target_path = Path(subject_id) / session_id
+                return DandiSession(self.dandi_id, str(target_path), self.cache_path)
+
 
 class DandiSession(BaseSession):
+    def __init__(self, dandiset_id, target_path, cache_path):
 
-    def __init__(self, dandiset_id, target_path):
-        
         from dandi.dandiapi import DandiAPIClient
+        from fsspec.implementations.cached import CachingFileSystem
+
         client = DandiAPIClient()
         dandiset = client.get_dandiset(dandiset_id, "draft")
         asset = dandiset.get_asset_by_path(target_path)
         s3_url = asset.get_content_url()
         fs = fsspec.filesystem("http")
+        fs = CachingFileSystem(fs=fs, cache_storage=cache_path)
         file = h5py.File(fs.open(s3_url, "rb"))
         io = NWBHDF5IO(file=file, load_namespaces=True)
         self.nwb = nap.NWBFile(io.read())
 
     def load_units(self) -> nap.TsGroup:
-        return self.nwb['units']
+        return self.nwb["units"]
 
     def load(self, key: str):
         available_keys = self.nwb.keys()
