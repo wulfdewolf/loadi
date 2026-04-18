@@ -105,7 +105,6 @@ class VollanMoser2024Session(BaseSession):
         spike_data = session_units['spikeTimes']
         spikes_np = [np.transpose(spike_train[0])[0] for spike_train in spike_data]
         spikes = nap.TsGroup(spikes_np)
-        spikes._metadata = 
 
         return spikes
     
