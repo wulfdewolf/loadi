@@ -7,15 +7,21 @@ from scipy.io import loadmat
 
 from importlib import resources
 
-class KanterMoser2025Experiment(BaseExperiment):
 
+class KanterMoser2025Experiment(BaseExperiment):
     def __init__(
-        self, 
-        containing_folder=Path("/home/nolanlab/Downloads/d-885b4936-9345-43bd-880e-eebc19898ded/"), 
+        self,
+        containing_folder=Path(
+            "/home/nolanlab/Downloads/d-885b4936-9345-43bd-880e-eebc19898ded/"
+        ),
     ):
-        
+
         self.containing_folder = Path(containing_folder)
-        with resources.files('loadi.resources.data_paths').joinpath('Kanter_Moser_2025.json').open('r') as f:
+        with (
+            resources.files("loadi.resources.data_paths")
+            .joinpath("Kanter_Moser_2025.json")
+            .open("r") as f
+        ):
             data_paths = json.load(f)
         self.data_paths = data_paths
 
@@ -26,18 +32,29 @@ class KanterMoser2025Experiment(BaseExperiment):
 
         mouse_dict = self.data_paths.get(rat_id)
         if mouse_dict is None:
-             raise ValueError(f"No mouse called {rat_id}. Possible mice are {self.data_paths.keys()}.")
+            raise ValueError(
+                f"No mouse called {rat_id}. Possible mice are {self.data_paths.keys()}."
+            )
         else:
-             day_list = mouse_dict.get(session_id)
-             if day_list is None:
-                 raise ValueError(f"No session_id called {session_id}. Possible session_ids are {mouse_dict.keys()}.")
-             else:
-                 filepath = self.containing_folder / 'data' / rat_id / (rat_id + "_" + session_id + ".nwb")
-                 return KanterMoser2025Session(rat_id, session_id, known_data_types=day_list, filepath=filepath)
+            day_list = mouse_dict.get(session_id)
+            if day_list is None:
+                raise ValueError(
+                    f"No session_id called {session_id}. Possible session_ids are {mouse_dict.keys()}."
+                )
+            else:
+                filepath = (
+                    self.containing_folder
+                    / "data"
+                    / rat_id
+                    / (rat_id + "_" + session_id + ".nwb")
+                )
+                return KanterMoser2025Session(
+                    rat_id, session_id, known_data_types=day_list, filepath=filepath
+                )
+
 
 class KanterMoser2025Session(BaseSession):
-
-    def __init__(self, rat_id, session_id, known_data_types = None, filepath = None):
+    def __init__(self, rat_id, session_id, known_data_types=None, filepath=None):
         self.mouse = rat_id
         self.date = session_id
         self.cache = {}
@@ -54,18 +71,17 @@ class KanterMoser2025Session(BaseSession):
 
     def load_units(self) -> nap.TsGroup:
 
-        clusters = self.data['units']
+        clusters = self.data["units"]
 
         # Extract hippocampal units
         unit_groups = self.data.nwb.units["electrode_group"].data[:]
         unit_ids = self.data.nwb.units.id[:]
         unit_to_region = {uid: g.location for uid, g in zip(unit_ids, unit_groups)}
 
-        clusters['region_from_electrodes'] = list(unit_to_region.values())
-        
+        clusters["region_from_electrodes"] = list(unit_to_region.values())
+
         return clusters
-    
+
     def load_subject_position(self) -> PositionDict:
 
-        return self.data['animal_position']
-    
+        return self.data["animal_position"]

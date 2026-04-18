@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.11"
 dependencies = [
+    "fsspec>=2026.3.0",
     "ipykernel>=7.2.0",
     "pandas>=2.3.3",
     "pymatreader>=1.2.2",
@@ -45,4 +46,9 @@ unfixable = []
 
 # Allow unused variables when prefixed with underscore
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.11",
+]
 
